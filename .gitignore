@@ -25,7 +25,7 @@ temp/
 *.whl
 
 results/
-tests/fixutures/chorwacja.MP4
-tests/fixutures/warszawa.MP4
-tests/fixutures/wilanow_1.MP4
-tests/fixutures/wilanow_2.MP4
+tests/fixtures/chorwacja.MP4
+tests/fixtures/warszawa.MP4
+tests/fixtures/wilanow_1.MP4
+tests/fixtures/wilanow_2.MP4
