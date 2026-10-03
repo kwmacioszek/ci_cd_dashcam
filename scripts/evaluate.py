@@ -29,9 +29,9 @@ def main() -> int:
     depth = None if args.no_depth else DepthEstimator(device=args.device)
     run(frames[:2], detector, depth)
     metrics = compute_metrics(run(frames, detector, depth))
-    metrics["device"] = detector.device
+    output_metrics = {**metrics, "device": detector.device}
 
-    Path(args.out).write_text(json.dumps(metrics, indent=2) + "\n")
+    Path(args.out).write_text(json.dumps(output_metrics, indent=2) + "\n")
     thresholds = json.loads(Path(args.thresholds).read_text())
     failures = check(metrics, thresholds)
     report = markdown_report(metrics, thresholds, failures)
