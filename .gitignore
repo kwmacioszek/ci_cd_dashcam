@@ -21,3 +21,11 @@ temp/
 
 # Python bytecode
 *.pyc
+
+*.whl
+
+results/
+tests/fixutures/chorwacja.MP4
+tests/fixutures/warszawa.MP4
+tests/fixutures/wilanow_1.MP4
+tests/fixutures/wilanow_2.MP4
