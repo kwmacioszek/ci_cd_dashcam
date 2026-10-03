@@ -10,7 +10,9 @@ def xyxy_to_z(b: np.ndarray) -> np.ndarray:
 
 
 def z_to_xyxy(z: np.ndarray) -> np.ndarray:
-    return np.array([z[0] - z[2] / 2, z[1] - z[3] / 2, z[0] + z[2] / 2, z[1] + z[3] / 2])
+    return np.array(
+        [z[0] - z[2] / 2, z[1] - z[3] / 2, z[0] + z[2] / 2, z[1] + z[3] / 2]
+    )
 
 
 class Track:
@@ -73,7 +75,9 @@ class ByteTrackLite:
         cost = 1 - iou * same
         rows, cols = linear_sum_assignment(cost)
         pairs = [
-            (int(i), int(j)) for i, j in zip(rows, cols, strict=True) if iou[i, j] * same[i, j] >= iou_thr
+            (int(i), int(j))
+            for i, j in zip(rows, cols, strict=True)
+            if iou[i, j] * same[i, j] >= iou_thr
         ]
         matched_t, matched_d = {p[0] for p in pairs}, {p[1] for p in pairs}
         return (
@@ -82,7 +86,9 @@ class ByteTrackLite:
             [j for j in range(len(boxes)) if j not in matched_d],
         )
 
-    def update(self, boxes: np.ndarray, scores: np.ndarray, labels: np.ndarray) -> list[Track]:
+    def update(
+        self, boxes: np.ndarray, scores: np.ndarray, labels: np.ndarray
+    ) -> list[Track]:
         """Jedna klatka. Zwraca potwierdzone tory zaktualizowane w tej klatce."""
         for t in self.tracks:
             t.predict()
@@ -91,7 +97,9 @@ class ByteTrackLite:
         bh, sh, lh = boxes[hi], scores[hi], labels[hi]
         bl, sl, ll = boxes[lo], scores[lo], labels[lo]
 
-        pairs, unmatched_tracks, unmatched_high = self._match(self.tracks, bh, lh, self.iou1)
+        pairs, unmatched_tracks, unmatched_high = self._match(
+            self.tracks, bh, lh, self.iou1
+        )
         for i, j in pairs:
             self.tracks[i].update(bh[j], sh[j])
         rest = [self.tracks[i] for i in unmatched_tracks]

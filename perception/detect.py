@@ -54,13 +54,19 @@ class Detector:
         self.torch = torch
         self.device = device or pick_device()
         self.processor = DetrImageProcessor.from_pretrained(model_id)
-        self.model = DetrForObjectDetection.from_pretrained(model_id, attn_implementation="eager")
+        self.model = DetrForObjectDetection.from_pretrained(
+            model_id, attn_implementation="eager"
+        )
         self.model.to(self.device)  # type: ignore[arg-type]  # stuby torcha
         self.model.eval()
-        self.id2label = {int(i): str(n) for i, n in (self.model.config.id2label or {}).items()}
+        self.id2label = {
+            int(i): str(n) for i, n in (self.model.config.id2label or {}).items()
+        }
         self.road_ids = {i for i, n in self.id2label.items() if n in ROAD}
 
-    def __call__(self, img: np.ndarray, thr: float = 0.3) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    def __call__(
+        self, img: np.ndarray, thr: float = 0.3
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         """img: RGB uint8 (H, W, 3). Zwraca (boxes xyxy, scores, labels)."""
         torch = self.torch
         with torch.no_grad():

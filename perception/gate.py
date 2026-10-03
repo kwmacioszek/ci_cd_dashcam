@@ -1,4 +1,3 @@
-
 import statistics
 
 from perception.pipeline import RunResult
@@ -27,13 +26,22 @@ def check(metrics: dict[str, float], thresholds: dict[str, float]) -> list[str]:
     failures = []
     for metric, key, ok, op in rules:
         if key in thresholds and not ok(metrics[metric], thresholds[key]):
-            failures.append(f"{metric} = {metrics[metric]} (wymagane {op} {thresholds[key]})")
+            failures.append(
+                f"{metric} = {metrics[metric]} (wymagane {op} {thresholds[key]})"
+            )
     return failures
 
 
-def markdown_report(metrics: dict[str, float], thresholds: dict[str, float], failures: list[str]) -> str:
+def markdown_report(
+    metrics: dict[str, float], thresholds: dict[str, float], failures: list[str]
+) -> str:
     status = "✅ zaliczona" if not failures else "❌ niezaliczona"
-    lines = [f"### Bramka jakości: {status}", "", "| metryka | wartość | próg |", "|---|---|---|"]
+    lines = [
+        f"### Bramka jakości: {status}",
+        "",
+        "| metryka | wartość | próg |",
+        "|---|---|---|",
+    ]
     keys = {
         "mean_detections": "min_mean_detections",
         "mean_track_length": "min_mean_track_length",

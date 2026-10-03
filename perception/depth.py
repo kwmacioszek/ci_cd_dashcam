@@ -24,7 +24,9 @@ class DepthEstimator:
 
         from perception.detect import pick_device
 
-        self.pipe = pipeline("depth-estimation", model=model_id, device=device or pick_device())
+        self.pipe = pipeline(
+            "depth-estimation", model=model_id, device=device or pick_device()
+        )
 
     def __call__(self, img: np.ndarray) -> np.ndarray:
         """img: RGB uint8. Zwraca mapę (H, W) w 0..1, większe = bliżej (głębia WZGLĘDNA)."""
