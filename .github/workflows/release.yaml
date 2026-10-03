@@ -1,0 +1,49 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: hf-${{ hashFiles('perception/detect.py', 'perception/depth.py') }}
+
+      - name: Tag musi zgadzać się z wersją w pyproject.toml
+        run: |
+          VERSION=$(python3 -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
+          if [ "v$VERSION" != "$GITHUB_REF_NAME" ]; then
+            echo "Tag $GITHUB_REF_NAME != wersja v$VERSION w pyproject.toml" >&2
+            exit 1
+          fi
+
+      - run: uv sync --frozen --extra ml --extra export --group dev
+      - run: uv run ruff check .
+      - run: uv run pytest
+      - run: uv run python scripts/evaluate.py --device cpu
+      - run: uv run python scripts/export_onnx.py --out detr.onnx
+      - run: uv build --wheel
+
+      - name: Sumy kontrolne
+        run: |
+          cp dist/*.whl .
+          sha256sum ./*.whl detr.onnx metrics.json > SHA256SUMS
+          cat SHA256SUMS
+
+      - name: Publikacja release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" ./*.whl detr.onnx metrics.json SHA256SUMS \
+            --title "$GITHUB_REF_NAME" --generate-notes
