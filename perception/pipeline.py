@@ -27,9 +27,7 @@ class RunResult:
     records: list[Record] = field(default_factory=list)
     detections_per_frame: list[int] = field(default_factory=list)
     seconds_per_frame: list[float] = field(default_factory=list)
-    depth_maps: list[np.ndarray] = field(
-        default_factory=list
-    )  # uint8 0..255, puste bez głębi
+    depth_maps: list[np.ndarray] = field(default_factory=list)  # uint8 0..255, puste bez głębi
 
 
 def run(

@@ -21,21 +21,15 @@ def _color(track_id: int) -> tuple[int, int, int]:
     return tuple(int(c) for c in rng.integers(60, 255, 3))  # type: ignore[return-value]
 
 
-def draw(
-    frame: np.ndarray, records: list[Record], id2label: dict[int, str]
-) -> np.ndarray:
+def draw(frame: np.ndarray, records: list[Record], id2label: dict[int, str]) -> np.ndarray:
     """Rysuje skrzynki z ID, klasą i `near` na kopii klatki RGB."""
     vis = frame.copy()
     for r in records:
         x1, y1, x2, y2 = (int(v) for v in r.box)
         col = _color(r.id)
         cv2.rectangle(vis, (x1, y1), (x2, y2), col, 2)
-        text = f"#{r.id} {id2label.get(r.label, r.label)}" + (
-            f" {r.near:.2f}" if r.near is not None else ""
-        )
-        cv2.putText(
-            vis, text, (x1, max(y1 - 5, 12)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, col, 2
-        )
+        text = f"#{r.id} {id2label.get(r.label, r.label)}" + (f" {r.near:.2f}" if r.near is not None else "")
+        cv2.putText(vis, text, (x1, max(y1 - 5, 12)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, col, 2)
     return vis
 
 
@@ -50,9 +44,7 @@ def draw_tracks(
     trails: dict[int, list[tuple[int, int]]] = {}
     for fi in range(index + 1):
         for r in by_frame.get(fi, []):
-            trails.setdefault(r.id, []).append(
-                (int((r.box[0] + r.box[2]) / 2), int(r.box[3]))
-            )
+            trails.setdefault(r.id, []).append((int((r.box[0] + r.box[2]) / 2), int(r.box[3])))
     for tid, pts in trails.items():
         if len(pts) > 1:
             cv2.polylines(vis, [np.array(pts, dtype=np.int32)], False, _color(tid), 2)
@@ -61,9 +53,7 @@ def draw_tracks(
 
 def depth_frame(depth_u8: np.ndarray) -> np.ndarray:
     """Koloruje mapę głębi (uint8, jaśniej = bliżej) do klatki RGB."""
-    return cv2.cvtColor(
-        cv2.applyColorMap(depth_u8, cv2.COLORMAP_INFERNO), cv2.COLOR_BGR2RGB
-    )
+    return cv2.cvtColor(cv2.applyColorMap(depth_u8, cv2.COLORMAP_INFERNO), cv2.COLOR_BGR2RGB)
 
 
 def write_video(path: Path, frames: list[np.ndarray], fps: float) -> Path:
@@ -87,12 +77,8 @@ def write_video(path: Path, frames: list[np.ndarray], fps: float) -> Path:
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="perception", description=__doc__)
     ap.add_argument("video", type=Path, help="plik wideo (dashcam)")
-    ap.add_argument(
-        "--out", type=Path, help="zapisz wideo z naniesionymi skrzynkami (mp4)"
-    )
-    ap.add_argument(
-        "--out-tracks", type=Path, help="zapisz wideo z torami obiektów (mp4)"
-    )
+    ap.add_argument("--out", type=Path, help="zapisz wideo z naniesionymi skrzynkami (mp4)")
+    ap.add_argument("--out-tracks", type=Path, help="zapisz wideo z torami obiektów (mp4)")
     ap.add_argument("--out-depth", type=Path, help="zapisz wideo z mapą głębi (mp4)")
     ap.add_argument(
         "--json",
@@ -101,12 +87,8 @@ def main(argv: list[str] | None = None) -> int:
     )
     ap.add_argument("--max-frames", type=int, default=180)
     ap.add_argument("--stride", type=int, default=4, help="bierz co N-tą klatkę")
-    ap.add_argument(
-        "--width", type=int, default=960, help="szerokość po przeskalowaniu"
-    )
-    ap.add_argument(
-        "--no-depth", action="store_true", help="pomiń estymację głębi (szybciej)"
-    )
+    ap.add_argument("--width", type=int, default=960, help="szerokość po przeskalowaniu")
+    ap.add_argument("--no-depth", action="store_true", help="pomiń estymację głębi (szybciej)")
     ap.add_argument("--device", default=None, help="cpu/mps/cuda; domyślnie auto")
     args = ap.parse_args(argv)
     if args.out_depth and args.no_depth:
@@ -134,12 +116,7 @@ def main(argv: list[str] | None = None) -> int:
         by_frame.setdefault(r.frame, []).append(r)
     for fi in range(len(frames)):
         recs = by_frame.get(fi, [])
-        desc = (
-            ", ".join(
-                f"#{r.id} {detector.id2label.get(r.label, r.label)}" for r in recs
-            )
-            or "-"
-        )
+        desc = ", ".join(f"#{r.id} {detector.id2label.get(r.label, r.label)}" for r in recs) or "-"
         print(f"klatka {fi:4d}: {desc}")
     ms = 1000 * float(np.median(res.seconds_per_frame))
     print(
@@ -163,10 +140,7 @@ def main(argv: list[str] | None = None) -> int:
         try:
             out_path = write_video(
                 args.out,
-                [
-                    draw(f, by_frame.get(i, []), detector.id2label)
-                    for i, f in enumerate(frames)
-                ],
+                [draw(f, by_frame.get(i, []), detector.id2label) for i, f in enumerate(frames)],
                 fps,
             )
         except (RuntimeError, ValueError) as exc:
@@ -178,10 +152,7 @@ def main(argv: list[str] | None = None) -> int:
         outputs.append(
             (
                 args.out_tracks,
-                [
-                    draw_tracks(f, by_frame, i, detector.id2label)
-                    for i, f in enumerate(frames)
-                ],
+                [draw_tracks(f, by_frame, i, detector.id2label) for i, f in enumerate(frames)],
             )
         )
     if args.out_depth:
