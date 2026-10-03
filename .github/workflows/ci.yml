@@ -36,7 +36,7 @@ jobs:
         with:
           path: ~/.cache/huggingface
           key: hf-${{ hashFiles('perception/detect.py', 'perception/depth.py') }}
-      - run: uv sync --frozen --extra ml --group dev
+      - run: uv sync --frozen --group dev
       - name: Bramka jakości (metryki vs thresholds.json)
         run: uv run python scripts/evaluate.py --device cpu
       - uses: actions/upload-artifact@v4

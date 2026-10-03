@@ -1,7 +1,7 @@
 export UV_PROJECT_ENVIRONMENT ?= .venv
 
-setup: 
-	uv sync --extra ml --group dev
+setup:
+	uv sync --group dev
 
-check: 
-	uv run ruff check . && uv run ruff format --check . && uv run mypy perception scripts 
+check:
+	uv run ruff check . && uv run ruff format --check . && uv run mypy perception scripts
