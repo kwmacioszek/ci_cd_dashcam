@@ -5,3 +5,6 @@ setup:
 
 check:
 	uv run ruff check . && uv run ruff format --check . && uv run mypy perception scripts
+
+ui:
+	uv run --extra ml --extra ui perception-ui

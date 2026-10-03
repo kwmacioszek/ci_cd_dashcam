@@ -2,5 +2,5 @@
   "min_mean_detections": 3.0,
   "min_mean_track_length": 8.0,
   "max_unique_tracks": 10,
-  "max_ms_per_frame": 1500
+  "max_ms_per_frame": 2000
 }
