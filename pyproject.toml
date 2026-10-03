@@ -33,6 +33,7 @@ ui = [
 [dependency-groups]
 dev = [
     "pytest>=8",
+    "pytest-cov>=5",
     "ruff>=0.6",
     "mypy>=1.11",
     "black>=26.5.1",
@@ -71,3 +72,14 @@ check_untyped_defs = true
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 markers = ["model: wymaga pobranych wag z Hugging Face (wolny, tylko job 'model' w CI)"]
+
+[tool.coverage.run]
+source = ["perception"]
+branch = true
+omit = ["perception/app.py"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
+exclude_also = ["if __name__ == .__main__.:", "if TYPE_CHECKING:"]
+fail_under = 60

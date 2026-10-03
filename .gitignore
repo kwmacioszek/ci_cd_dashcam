@@ -29,3 +29,8 @@ tests/fixtures/chorwacja.MP4
 tests/fixtures/warszawa.MP4
 tests/fixtures/wilanow_1.MP4
 tests/fixtures/wilanow_2.MP4
+
+# Coverage reports
+htmlcov/
+.coverage
+coverage.xml

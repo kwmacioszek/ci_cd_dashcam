@@ -10,3 +10,6 @@ check:
 ui:
 	# Użyj aktywnego środowiska ROCm bez synchronizacji do wersji CPU.
 	uv run --active --no-sync python -m perception.app $(UI_ARGS)
+
+cov:
+	uv run pytest -m "not model" --cov --cov-report=term-missing --cov-report=html -q
