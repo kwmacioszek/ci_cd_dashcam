@@ -34,3 +34,5 @@ tests/fixtures/wilanow_2.MP4
 htmlcov/
 .coverage
 coverage.xml
+
+data/
