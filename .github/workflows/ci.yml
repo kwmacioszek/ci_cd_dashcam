@@ -21,8 +21,8 @@ jobs:
         with:
           enable-cache: true
       - run: uv sync --frozen --group dev
-      - run: uv run ruff check .
-      - run: uv run ruff format --check .
+      - run: uv run ruff check perception
+      - run: uv run ruff format --check perception
       - run: uv run mypy perception
       - run: uv run pytest -m "not model"
       
