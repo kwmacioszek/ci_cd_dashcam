@@ -1,0 +1,8 @@
+{
+  "frames": 30,
+  "mean_detections": 3.6,
+  "unique_tracks": 6,
+  "mean_track_length": 14.0,
+  "ms_per_frame": 826.6,
+  "device": "cpu"
+}
