@@ -5,7 +5,7 @@ setup:
 	uv sync --extra ml --group dev
 
 check:
-	uv run ruff check . && uv run ruff format --check . && uv run mypy perception
+	uv run ruff check perception && uv run ruff format --check perception && uv run mypy perception
 
 ui:
 	# Użyj aktywnego środowiska ROCm bez synchronizacji do wersji CPU.
@@ -24,4 +24,4 @@ val-data:
 	python scripts/fetch_val.py --split valid
 
 eval-base:
-	uv run --extra ml python scripts/eval_base.py --json runs/base_val.json
+	uv run --extra ml python scripts/eval_base.py --json runs/base_val_3.json

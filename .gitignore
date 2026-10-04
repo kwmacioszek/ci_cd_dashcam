@@ -36,3 +36,5 @@ htmlcov/
 coverage.xml
 
 data/
+
+runs/
