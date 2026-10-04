@@ -20,6 +20,9 @@ ml = [
     "torchvision>=0.19",
     "transformers>=4.45",
     "timm>=1.0",
+    "torchmetrics>=1.4",
+    "pycocotools>=2.0",
+    "pyyaml>=6",
 ]
 export = [
     "onnx>=1.17",

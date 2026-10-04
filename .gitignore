@@ -28,3 +28,5 @@ htmlcov/
 .coverage
 
 coverage.xml
+
+data/
