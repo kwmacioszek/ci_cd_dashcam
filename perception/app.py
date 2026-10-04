@@ -1,4 +1,6 @@
 import argparse
+import shutil
+import subprocess
 import tempfile
 from functools import lru_cache
 from pathlib import Path
@@ -25,12 +27,24 @@ def _models(device: str | None, use_depth: bool):
 
 
 def _write_browser_video(path: Path, frames: list[np.ndarray], fps: float) -> None:
-    """Zapisuje mp4 odtwarzalny w przeglądarce (H.264), a gdy kodek niedostępny, mp4v."""
+    """Zapisuje mp4 odtwarzalny w przeglądarce (H.264 przez ffmpeg), a bez ffmpeg mp4v."""
     h, w = frames[0].shape[:2]
-    for codec in ("avc1", "mp4v"):
-        writer = cv2.VideoWriter(str(path), cv2.VideoWriter.fourcc(*codec), fps, (w, h))
-        if writer.isOpened():
-            break
+    if shutil.which("ffmpeg"):
+        cmd = [
+            "ffmpeg", "-y", "-loglevel", "error",
+            "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{w}x{h}", "-r", str(fps), "-i", "-",
+            "-vf", "pad=ceil(iw/2)*2:ceil(ih/2)*2",  # yuv420p wymaga parzystych wymiarów
+            "-c:v", "libx264", "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(path),
+        ]  # fmt: skip
+        proc = subprocess.Popen(cmd, stdin=subprocess.PIPE)
+        stdin = proc.stdin
+        assert stdin is not None  # stdin=PIPE gwarantuje strumień
+        for f in frames:
+            stdin.write(np.ascontiguousarray(f).tobytes())
+        stdin.close()
+        if proc.wait() == 0:
+            return
+    writer = cv2.VideoWriter(str(path), cv2.VideoWriter.fourcc(*"mp4v"), fps, (w, h))
     for f in frames:
         writer.write(cv2.cvtColor(f, cv2.COLOR_RGB2BGR))
     writer.release()
@@ -121,10 +135,11 @@ def build():
 
 def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser(prog="perception-ui", description=__doc__)
+    ap.add_argument("--host", default="127.0.0.1", help="adres nasłuchu (w kontenerze: 0.0.0.0)")
     ap.add_argument("--port", type=int, default=7860)
     ap.add_argument("--share", action="store_true", help="publiczny link gradio.live")
     args = ap.parse_args(argv)
-    build().queue().launch(server_port=args.port, share=args.share)
+    build().queue().launch(server_name=args.host, server_port=args.port, share=args.share)
 
 
 if __name__ == "__main__":

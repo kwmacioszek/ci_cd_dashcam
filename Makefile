@@ -13,3 +13,9 @@ ui:
 
 cov:
 	uv run pytest -m "not model" --cov --cov-report=term-missing --cov-report=html -q
+
+docker:  ## buduje obraz z UI Gradio
+	docker build -t perception:dev .
+
+docker-run: docker  ## uruchamia kontener z UI Gradio
+	docker run --rm -p 7860:7860 -v hf-cache:/cache/huggingface perception:dev

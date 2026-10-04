@@ -1,0 +1,12 @@
+.git
+.venv*
+outputs
+data
+runs
+htmlcov
+*.onnx
+*.MP4
+*.mp4
+!tests/fixtures/clip.mp4
+__pycache__
+.env*
