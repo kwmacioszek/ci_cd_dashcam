@@ -4,7 +4,7 @@ setup:
 	uv sync --extra ml --group dev
 
 check: 
-	uv run ruff check . && uv run ruff format --check . && uv run mypy perception 
+	uv run ruff check perception && uv run ruff format --check perception && uv run mypy perception 
 
 ui: 
 	uv run --extra ml --extra ui perception-ui
@@ -22,4 +22,4 @@ val-data:
 	python scripts/fetch_val.py --split valid
 
 eval-base:  
-	uv run --extra ml python scripts/eval_base.py --json runs/base_val.json
+	uv run --extra ml python scripts/eval_base.py --json runs/base_val_2.json
